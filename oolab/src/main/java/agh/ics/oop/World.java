@@ -3,9 +3,10 @@ package agh.ics.oop;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class World {
-    static void run(List<Direction> movement){
-        for (Direction way : movement){
+    static void run(List<MoveDirection> movement){
+        for (MoveDirection way : movement){
             switch (way) {
                 case FORWARD -> System.out.println("Ruch do przodu");
                 case BACKWARD -> System.out.println("Ruch do tylu");
@@ -20,14 +21,14 @@ public class World {
 //        String str = scanner.nextLine();
         for (String str : args){
             int dl = str.length();
-            List<Direction> movement = new ArrayList<>();
+            List<MoveDirection> movement = new ArrayList<>();
             for(int i = 0; i < dl; i++){
                 char c = str.charAt(i);
                 switch (c) {
-                    case 'f' -> movement.add(Direction.FORWARD);
-                    case 'b' -> movement.add(Direction.BACKWARD);
-                    case 'l' -> movement.add(Direction.LEFT);
-                    case 'r' -> movement.add(Direction.RIGHT);
+                    case 'f' -> movement.add(MoveDirection.FORWARD);
+                    case 'b' -> movement.add(MoveDirection.BACKWARD);
+                    case 'l' -> movement.add(MoveDirection.LEFT);
+                    case 'r' -> movement.add(MoveDirection.RIGHT);
                 }
             }
             World.run(movement);
@@ -42,6 +43,17 @@ public class World {
                 f - ruch do przodu
                 b - ruch do tylu""");
         World.readArgs(args);
+        Vector2d position1 = new Vector2d(1,2);
+        System.out.println(position1);
+        Vector2d position2 = new Vector2d(-2,1);
+        System.out.println(position2);
+        System.out.println(position1.add(position2));
+        MapDirection kierunek = MapDirection.NORTH;
+        System.out.println(kierunek);
+        System.out.println(kierunek.next().toString());
+        System.out.println(kierunek.previous().toString());
+        System.out.println(kierunek.toUnitVector().toString());
+
         System.out.println("System zakonczyl dzialanie");
     }
 }
