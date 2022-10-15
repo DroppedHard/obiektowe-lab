@@ -1,6 +1,6 @@
 package agh.ics.oop;
 
-enum Direction {
+enum MoveDirection {
     FORWARD,
     BACKWARD,
     RIGHT,
