@@ -2,15 +2,19 @@ package agh.ics.oop;
 
 public class Animal {
 
+    private final IWorldMap worldMap;
     private MapDirection facing = MapDirection.NORTH;
-    private Vector2d position = new Vector2d(2,2);
+    public Vector2d position;   // Lepiej by była publiczna, dzięki temu dodawanie w RectangularMap jest prostsze.
 
-    public Animal(){
+    public Animal(IWorldMap map, Vector2d initialPosition){
+        this.worldMap = map;
+        this.position = initialPosition;
+        map.place(this);
     }
 
     @Override
     public String toString() {
-        return position + " " + facing;
+        return facing.toString();
     }
 
     boolean isAt(Vector2d position){
@@ -22,30 +26,19 @@ public class Animal {
             case LEFT -> facing = facing.previous();
             case RIGHT -> facing = facing.next();
             case FORWARD -> {
-                if (this.onMap(true)) {
+                if (this.worldMap.canMoveTo(position.add(this.facing.toUnitVector()))) {
+                    this.worldMap.remove(position);
                     position = position.add(this.facing.toUnitVector());
+                    this.worldMap.place(this);
                 }
             }
             case BACKWARD -> {
-                if (this.onMap(false)) {
+                if (this.worldMap.canMoveTo(position.substract(this.facing.toUnitVector()))) {
+                    this.worldMap.remove(position);
                     position = position.substract(this.facing.toUnitVector());
+                    this.worldMap.place(this);
                 }
             }
-        }
-    }
-    private boolean onMap(boolean where){
-        if ((facing == MapDirection.NORTH && where) || (facing == MapDirection.SOUTH && !where)){
-            int maxY = 4;
-            return position.y + 1 <= maxY;
-        } else if ((facing == MapDirection.WEST && where) ||(facing == MapDirection.EAST && !where)) {
-            int minX = 0;
-            return position.x - 1 >= minX;
-        } else if (facing == MapDirection.SOUTH || facing == MapDirection.NORTH) {
-            int minY = 0;
-            return position.y - 1 >= minY;
-        } else {
-            int maxX = 4;
-            return position.x + 1 <= maxX;
         }
     }
 }
