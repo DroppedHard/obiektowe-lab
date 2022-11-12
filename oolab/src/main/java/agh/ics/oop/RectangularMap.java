@@ -1,7 +1,7 @@
 package agh.ics.oop;
 
 
-public class RectangularMap implements IWorldMap{
+public class RectangularMap extends AbstractWorldMap implements IWorldMap{
 
     private final int width;
     private final int height;
@@ -10,6 +10,8 @@ public class RectangularMap implements IWorldMap{
     public RectangularMap(int width, int height) {
         this.width=width;
         this.height=height;
+        this.lowerLeft = new Vector2d(0,0);
+        this.upperRight = new Vector2d(width-1, height-1);
         mapa = new Object[height][width];
     }
     @Override
@@ -42,11 +44,5 @@ public class RectangularMap implements IWorldMap{
     @Override
     public void remove(Vector2d position){
         mapa[position.y][position.x] = null;
-    }
-
-    @Override
-    public String toString() {
-        MapVisualizer odp = new MapVisualizer(this);
-        return odp.draw(new Vector2d(0,0), new Vector2d(width-1, height-1));
     }
 }
