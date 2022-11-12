@@ -1,24 +1,19 @@
 package agh.ics.oop;
 
-public class Animal {
+public class Animal extends AbstractWorldMapElement {
 
     private final IWorldMap worldMap;
     private MapDirection facing = MapDirection.NORTH;
-    public Vector2d position;   // Lepiej by była publiczna, dzięki temu dodawanie w RectangularMap jest prostsze.
 
     public Animal(IWorldMap map, Vector2d initialPosition){
+        super(initialPosition);
         this.worldMap = map;
-        this.position = initialPosition;
         map.place(this);
     }
 
     @Override
     public String toString() {
         return facing.toString();
-    }
-
-    boolean isAt(Vector2d position){
-        return this.position == position;
     }
 
     void move(MoveDirection direction){
@@ -28,6 +23,11 @@ public class Animal {
             case FORWARD -> {
                 if (this.worldMap.canMoveTo(position.add(this.facing.toUnitVector()))) {
                     this.worldMap.remove(position);
+                    if (this.worldMap.objectAt(position.add(this.facing.toUnitVector())) != null &&
+                            this.worldMap.objectAt(position.add(this.facing.toUnitVector())).getClass() == Grass.class) {
+                        this.worldMap.remove(position.add(this.facing.toUnitVector()));
+                        // zwierzak zjadł trawę (jak przejdzie tyłem to nie zje póki co
+                    }
                     position = position.add(this.facing.toUnitVector());
                     this.worldMap.place(this);
                 }
@@ -35,6 +35,11 @@ public class Animal {
             case BACKWARD -> {
                 if (this.worldMap.canMoveTo(position.substract(this.facing.toUnitVector()))) {
                     this.worldMap.remove(position);
+                    if (this.worldMap.objectAt(position.substract(this.facing.toUnitVector())) != null &&
+                            this.worldMap.objectAt(position.substract(this.facing.toUnitVector())).getClass() == Grass.class) {
+                        this.worldMap.remove(position.substract(this.facing.toUnitVector()));
+                        // zwierzak zjadł trawę (jak przejdzie tyłem to nie zje póki co
+                    }
                     position = position.substract(this.facing.toUnitVector());
                     this.worldMap.place(this);
                 }
