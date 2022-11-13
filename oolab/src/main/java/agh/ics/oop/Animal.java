@@ -1,14 +1,19 @@
 package agh.ics.oop;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Animal extends AbstractWorldMapElement {
 
     private final IWorldMap worldMap;
     private MapDirection facing = MapDirection.NORTH;
+    private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal(IWorldMap map, Vector2d initialPosition){
         super(initialPosition);
         this.worldMap = map;
-        map.place(this);
+        addObserver((IPositionChangeObserver) map);
+        worldMap.place(this);
     }
 
     @Override
@@ -21,29 +26,38 @@ public class Animal extends AbstractWorldMapElement {
             case LEFT -> facing = facing.previous();
             case RIGHT -> facing = facing.next();
             case FORWARD -> {
-                if (this.worldMap.canMoveTo(position.add(this.facing.toUnitVector()))) {
-                    this.worldMap.remove(position);
-                    if (this.worldMap.objectAt(position.add(this.facing.toUnitVector())) != null &&
-                            this.worldMap.objectAt(position.add(this.facing.toUnitVector())).getClass() == Grass.class) {
-                        this.worldMap.remove(position.add(this.facing.toUnitVector()));
-                        // zwierzak zjadł trawę (jak przejdzie tyłem to nie zje póki co
-                    }
-                    position = position.add(this.facing.toUnitVector());
-                    this.worldMap.place(this);
+                Vector2d newPos = position.add(this.facing.toUnitVector());
+                if (this.worldMap.canMoveTo(newPos)) {
+                    eatIfGrass(newPos);
+                    positionChanged(newPos);
+                    position = newPos;
                 }
             }
             case BACKWARD -> {
-                if (this.worldMap.canMoveTo(position.substract(this.facing.toUnitVector()))) {
-                    this.worldMap.remove(position);
-                    if (this.worldMap.objectAt(position.substract(this.facing.toUnitVector())) != null &&
-                            this.worldMap.objectAt(position.substract(this.facing.toUnitVector())).getClass() == Grass.class) {
-                        this.worldMap.remove(position.substract(this.facing.toUnitVector()));
-                        // zwierzak zjadł trawę (jak przejdzie tyłem to nie zje póki co
-                    }
-                    position = position.substract(this.facing.toUnitVector());
-                    this.worldMap.place(this);
+                Vector2d newPos = position.substract(this.facing.toUnitVector());
+                if (this.worldMap.canMoveTo(newPos)) {
+                    eatIfGrass(newPos);
+                    positionChanged(newPos);
+                    position = newPos;
                 }
             }
+        }
+    }
+    void eatIfGrass(Vector2d newPos) {
+        if (this.worldMap.objectAt(newPos) != null && this.worldMap.objectAt(newPos).getClass() == Grass.class) {
+            this.worldMap.remove(newPos);
+            // zwierzak zjadł trawę
+        }
+    }
+    void addObserver(IPositionChangeObserver observer){
+        observers.add(observer);
+    }
+    void removeObserver(IPositionChangeObserver observer) {
+        observers.remove(observer);
+    }
+    void positionChanged(Vector2d newPos) {
+        for (IPositionChangeObserver obs: observers) {
+            obs.positionChanged(this.position, newPos);
         }
     }
 }

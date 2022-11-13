@@ -16,7 +16,8 @@ class GrassFieldTest {
     @Test
     void canMoveTo_whereGrass() {
         GrassField map = new GrassField(0);
-        map.things.add(new Grass(new Vector2d(2,2)));
+//        map.things.add(new Grass(new Vector2d(2,2)));
+        map.elements.put(new Vector2d(2,2), new Grass(new Vector2d(2,2)));
         assertTrue(map.canMoveTo(new Vector2d(2,2)));
         assertTrue(map.canMoveTo(new Vector2d(2,3)));
     }
@@ -41,7 +42,8 @@ class GrassFieldTest {
     void isOccupied_withGrass() {
         GrassField map = new GrassField(0);
         Vector2d pos = new Vector2d(2,2);
-        map.things.add(new Grass(pos));
+//        map.things.add(new Grass(pos));
+        map.elements.put(pos, new Grass(pos));
         assertTrue(map.isOccupied(pos));
     }
     @Test
@@ -49,7 +51,8 @@ class GrassFieldTest {
         GrassField map = new GrassField(0);
         Vector2d pos1 = new Vector2d(2,2);
         Vector2d pos2 = new Vector2d(2,3);
-        map.things.add(new Grass(pos1));
+//        map.things.add(new Grass(pos1));
+        map.elements.put(pos1, new Grass(pos1));
         map.place(new Animal(map, pos2));
         assertEquals(map.objectAt(pos1).getClass(), Grass.class);
         assertEquals(map.objectAt(pos2).getClass(), Animal.class);
@@ -60,7 +63,8 @@ class GrassFieldTest {
         GrassField map = new GrassField(0);
         Vector2d pos1 = new Vector2d(2,2);
         Vector2d pos2 = new Vector2d(2,3);
-        map.things.add(new Grass(pos1));
+//        map.things.add(new Grass(pos1));
+        map.elements.put(pos1, new Grass(pos1));
         map.place(new Animal(map, pos2));
         assertTrue(map.isOccupied(pos1));
         assertTrue(map.isOccupied(pos2));
