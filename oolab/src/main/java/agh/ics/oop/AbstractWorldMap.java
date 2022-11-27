@@ -13,7 +13,6 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver, IWorl
         MapVisualizer odp = new MapVisualizer(this);
         return odp.draw(this.lowerLeft, this.upperRight);
     }
-
     public void positionChanged (Vector2d oldPosition, Vector2d newPosition) {
         boundary.positionChanged(oldPosition, newPosition);
         this.adaptCorners();

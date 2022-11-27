@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import java.io.FileNotFoundException;
+
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
@@ -22,7 +24,7 @@ public interface IWorldMap {
      *
      * @param animal The animal to place on the map.
      */
-    void place(Animal animal);
+    void place(Animal animal) throws FileNotFoundException;
 
     /**
      * Return true if given position on the map is occupied. Should not be
@@ -43,5 +45,5 @@ public interface IWorldMap {
      * @return Object or null if the position is not occupied.
      */
     Object objectAt(Vector2d position);
-    void remove(Vector2d position); // by móc usunąć poprzedniego zwierzaka
+    void remove(Vector2d position) throws FileNotFoundException; // by móc usunąć poprzedniego zwierzaka
 }

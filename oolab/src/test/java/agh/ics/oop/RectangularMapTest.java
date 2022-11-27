@@ -1,12 +1,15 @@
 package agh.ics.oop;
 
 import org.junit.jupiter.api.Test;
+
+import java.io.FileNotFoundException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RectangularMapTest {
 
     @Test
-    void canMoveTo() {
+    void canMoveTo() throws FileNotFoundException {
         RectangularMap map = new RectangularMap(5,5);
         Animal zwierz = new Animal(map, new Vector2d(2,2));
         assertFalse(map.canMoveTo(new Vector2d(2,2)));
@@ -18,7 +21,7 @@ class RectangularMapTest {
     }
 
     @Test
-    void place() {
+    void place() throws FileNotFoundException {
         RectangularMap map = new RectangularMap(5,5);
         assertNull(map.objectAt(new Vector2d(2, 2)));
         Animal zwierz = new Animal(map, new Vector2d(2,2));
@@ -37,7 +40,7 @@ class RectangularMapTest {
     }
 
     @Test
-    void isOccupied() {
+    void isOccupied() throws FileNotFoundException {
         RectangularMap map = new RectangularMap(5,5);
         assertFalse(map.isOccupied(new Vector2d(2, 2)));
         Animal zwierz = new Animal(map, new Vector2d(2,2));
@@ -45,7 +48,7 @@ class RectangularMapTest {
     }
 
     @Test
-    void objectAt() {
+    void objectAt() throws FileNotFoundException {
         RectangularMap map = new RectangularMap(5,5);
         assertNull(map.objectAt(new Vector2d(2, 2)));
         Animal zwierz = new Animal(map, new Vector2d(2,2));
@@ -53,7 +56,7 @@ class RectangularMapTest {
     }
 
     @Test
-    void remove() {
+    void remove() throws FileNotFoundException {
         RectangularMap map = new RectangularMap(5,5);
         Animal zwierz = new Animal(map, new Vector2d(2,2));
         assertEquals(map.objectAt(new Vector2d(2,2)).getClass(), Animal.class);

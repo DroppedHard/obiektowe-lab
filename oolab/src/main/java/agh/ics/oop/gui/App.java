@@ -1,5 +1,4 @@
 package agh.ics.oop.gui;
-
 import agh.ics.oop.*;
 import javafx.application.Application;
 import javafx.geometry.HPos;
@@ -8,9 +7,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import java.io.FileNotFoundException;
 
-public class App extends Application {
+public class App extends Application implements IPositionChangeObserver{
     AbstractWorldMap abstractMap;
+    ColumnConstraints cc = new ColumnConstraints(40);
+    RowConstraints rc = new RowConstraints(40);
+    GridPane grid;
     @Override
     public void init(){
         try {
@@ -20,32 +23,34 @@ public class App extends Application {
             GrassField grassMap = new GrassField(10);
             abstractMap = grassMap;
             System.out.println("dodano mapę");
-            Vector2d[] positions = {new Vector2d(2,2), new Vector2d(3,3)};
+            Vector2d[] positions = {new Vector2d(2,2), new Vector2d(3,4)};
 //            Vector2d[] positions = {};
             System.out.println("dodano zwierzaki");
-            IEngine engine = new SimulationEngine(directions, grassMap, positions);
+            SimulationEngine engine = new SimulationEngine(directions, grassMap, positions, this);
             System.out.println("Rysujemy mapę");
-            engine.run();
+            Thread engineThread = new Thread(engine);
+            engineThread.start();
             System.out.println("System zakonczyl dzialanie");
         } catch (IllegalArgumentException exception){
             System.out.println(exception.getMessage());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
-
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) throws FileNotFoundException {
         primaryStage.setTitle("oolab");
         StackPane root = new StackPane();
-//        Label label = new Label("y/x");
-
-        GridPane grid = new GridPane();
-//        grid.add(label, 0,0);
-//        grid.add(label1, 1,0);
-//        grid.add(label2, 2,0);
-//        grid.add(label3, 0,1);
+        grid = new GridPane();
         grid.setGridLinesVisible(true);
-        ColumnConstraints cc = new ColumnConstraints(20);
-        RowConstraints rc = new RowConstraints(20);
+        centerGrid();
+        addElements();
+        root.getChildren().add(grid);
+        Scene scene = new Scene(root, 600, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    private void centerGrid(){
         grid.setAlignment(Pos.CENTER);
         for (int j = abstractMap.lowerLeft.x-1; j <= abstractMap.upperRight.x; j++) {
             grid.getColumnConstraints().add(cc);
@@ -53,51 +58,55 @@ public class App extends Application {
         for (int i = abstractMap.upperRight.y+1; i >= abstractMap.lowerLeft.y; i--) {
             grid.getRowConstraints().add(rc);
         }
-
+    }
+    public void addElements() throws FileNotFoundException {
         for (int i = abstractMap.upperRight.y+1; i >= abstractMap.lowerLeft.y; i--) {
-
             if (i == abstractMap.upperRight.y+1) {
-                Label label = new Label("y/x");
-                grid.add(label, 0,0);
-                GridPane.setHalignment(label, HPos.CENTER);
-            }else {
-                Label labeli = new Label(i+"");
-                grid.add(labeli,0, abstractMap.upperRight.y - i + 1);
-                GridPane.setHalignment(labeli, HPos.CENTER);
+                addCell(0, 0, "y/x");
+            } else {
+                addCell(0, abstractMap.upperRight.y - i + 1, i+"");
             }
             for (int j = abstractMap.lowerLeft.x; j <= abstractMap.upperRight.x; j++) {
                 if (i == abstractMap.upperRight.y+1) {
-//                    builder.append(drawFrame(j <= upperRight.x));
-                    Label labelj = new Label(j+"");
-                    grid.add(labelj,j+1 - abstractMap.lowerLeft.x, 0);
-                    GridPane.setHalignment(labelj, HPos.CENTER);
+                    addCell(j+1 - abstractMap.lowerLeft.x, 0, j+"");
                 } else {
                     drawObject(grid, new Vector2d(j, i));
-//                    Label labelx = new Label((j+1)+"-"+(abstractMap.upperRight.y - i + 1));
-//                    grid.add(labelx,j+1, abstractMap.upperRight.y - i + 1);
                 }
             }
-//            builder.append(System.lineSeparator());
         }
-
-
-        root.getChildren().add(grid);
-
-        Scene scene = new Scene(root, 400, 400);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
-    private void drawObject(GridPane grid, Vector2d pos){
-        String result = "";
+    private void changeElements() throws FileNotFoundException {
+        for (int i = abstractMap.upperRight.y; i >= abstractMap.lowerLeft.y; i--) {
+            for (int j = abstractMap.lowerLeft.x+1; j <= abstractMap.upperRight.x; j++) {
+                drawObject(grid, new Vector2d(j, i));
+            }
+        }
+    }
+    private void addCell(int colIdx, int rowIdx, String text){
+        Label label = new Label(text);
+        label.setStyle("-fx-font-size: 20");
+        grid.add(label, colIdx, rowIdx);
+        GridPane.setHalignment(label, HPos.CENTER);
+    }
+    private void drawObject(GridPane grid, Vector2d pos) throws FileNotFoundException {
+        GuiElementBox el = null;
         if (this.abstractMap.isOccupied(pos)) {
             Object object = this.abstractMap.objectAt(pos);
             if (object != null) {
-                result = object.toString();
+                el = new GuiElementBox((IMapElement) object);
             }
         }
-        Label cell = new Label(result);
-        grid.add(cell, pos.x+1 - abstractMap.lowerLeft.x, abstractMap.upperRight.y - pos.y+1);
-        GridPane.setHalignment(cell, HPos.CENTER);
+        if (el != null) {
+            grid.add(el.box, pos.x+1 - abstractMap.lowerLeft.x, abstractMap.upperRight.y - pos.y+1);
+            GridPane.setHalignment(el.box, HPos.CENTER);
+        }
+    }
+    public void clearMap(){
+        grid.getChildren().clear();
+    }
+
+    @Override
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+
     }
 }

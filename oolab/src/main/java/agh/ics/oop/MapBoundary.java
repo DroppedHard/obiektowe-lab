@@ -36,7 +36,7 @@ public class MapBoundary implements IPositionChangeObserver{
     }
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-//        Class[] klasy = new Class[]{Animal.class, Grass.class};     // od razu jest gotowe na potencjane przemieszczenie trawy
+//        Class[] klasy = new Class[]{Animal.class, Grass.class};     // gotowe na potencjane przemieszczenie trawy
         Class[] klasy = new Class[]{Animal.class};     // wersja bez mozliwości przeniesienia trawy
         for (Class klasa: klasy) {
             BoundaryElement el = new BoundaryElement(oldPosition, klasa);

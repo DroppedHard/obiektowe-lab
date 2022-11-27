@@ -1,5 +1,10 @@
 package agh.ics.oop;
 
+import javafx.scene.image.Image;
+
+import java.io.FileNotFoundException;
+
 public interface IMapElement {
-    // tą funkcje spełnia u mnie klasa abstrakcyjna AbstractWorldMapElement, gdzie definiuję, że każdy element dziedziczy po tej klasie pozycję.
+    Image getImg() throws FileNotFoundException;
+    String getLabel();
 }

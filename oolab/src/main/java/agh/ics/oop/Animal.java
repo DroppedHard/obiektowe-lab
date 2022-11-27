@@ -1,15 +1,22 @@
 package agh.ics.oop;
-
+import agh.ics.oop.gui.GuiElementBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Animal extends AbstractWorldMapElement {
-
+public class Animal extends AbstractWorldMapElement implements IMapElement{
+    private final Image imgUp = new Image(new FileInputStream("src/main/resources/cat-up.png"));
+    private final Image imgdown = new Image(new FileInputStream("src/main/resources/cat-down.png"));
+    private final Image imgLeft = new Image(new FileInputStream("src/main/resources/cat-left.png"));
+    private final Image imgRight = new Image(new FileInputStream("src/main/resources/cat-right.png"));
     private final IWorldMap worldMap;
-    private MapDirection facing = MapDirection.NORTH;
+    public MapDirection facing = MapDirection.NORTH;
     private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
-    public Animal(IWorldMap map, Vector2d initialPosition){
+    public Animal(IWorldMap map, Vector2d initialPosition) throws FileNotFoundException {
         super(initialPosition);
         this.worldMap = map;
         addObserver((IPositionChangeObserver) map);
@@ -21,7 +28,7 @@ public class Animal extends AbstractWorldMapElement {
         return facing.toString();
     }
 
-    void move(MoveDirection direction){
+    public void move(MoveDirection direction) throws FileNotFoundException {
         switch (direction){
             case LEFT -> facing = facing.previous();
             case RIGHT -> facing = facing.next();
@@ -47,7 +54,7 @@ public class Animal extends AbstractWorldMapElement {
             }
         }
     }
-    void eatIfGrass(Vector2d newPos) {
+    void eatIfGrass(Vector2d newPos) throws FileNotFoundException {
         if (this.worldMap.objectAt(newPos) != null && this.worldMap.objectAt(newPos).getClass() == Grass.class) {
             this.worldMap.remove(newPos);
             // zwierzak zjadł trawę
@@ -60,5 +67,29 @@ public class Animal extends AbstractWorldMapElement {
         for (IPositionChangeObserver obs: observers) {
             obs.positionChanged(this.position, newPos);
         }
+    }
+    public VBox createImage() throws IllegalArgumentException, FileNotFoundException{
+        try {
+            GuiElementBox el = new GuiElementBox(this);
+            return el.box;
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Image getImg() throws IllegalArgumentException {
+        switch (this.facing) {
+            case NORTH -> {return imgUp;}
+            case SOUTH -> {return imgdown;}
+            case WEST -> {return imgLeft;}
+            case EAST -> {return imgRight;}
+            default -> throw new IllegalStateException("Unexpected value: " + this.facing);
+        }
+    }
+
+    @Override
+    public String getLabel() {
+        return "Kot " + position;
     }
 }
