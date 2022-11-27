@@ -1,11 +1,12 @@
 package agh.ics.oop;
 
+import java.io.FileNotFoundException;
+
 import static java.lang.Math.sqrt;
 
 public class GrassField extends AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
-//    public final List<AbstractWorldMapElement> things = new ArrayList<>();
     private final int n;
-    public GrassField(int n){
+    public GrassField(int n) throws FileNotFoundException {
         this.n = n;
         lowerLeft = new Vector2d(Integer.MAX_VALUE,Integer.MAX_VALUE);
         upperRight = new Vector2d(-Integer.MAX_VALUE,-Integer.MAX_VALUE);
@@ -18,7 +19,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap, IPosition
     }
 
     @Override
-    public void place(Animal animal) throws IllegalArgumentException{
+    public void place(Animal animal) throws IllegalArgumentException, FileNotFoundException {
         if (isOccupied(animal.position)) {
             AbstractWorldMapElement el = elements.get(animal.position);
             if (el.getClass() == Animal.class) {
@@ -34,7 +35,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap, IPosition
     }
 
     @Override
-    public void remove(Vector2d position) { // pozycja będzie aktualizowana z dodaniem elementu
+    public void remove(Vector2d position) throws FileNotFoundException { // pozycja będzie aktualizowana z dodaniem elementu
         AbstractWorldMapElement el = elements.get(position);
         if (el.getClass() == Grass.class) {
             addGrass(1);    // liczba kępków trawy na mapie musi się zgadzać
@@ -42,7 +43,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap, IPosition
         elements.remove(position);
     }
 
-    public void addGrass(int ile){
+    public void addGrass(int ile) throws FileNotFoundException {
         int size = (int) sqrt(n*10);
         int i=0;
         while (i<ile){

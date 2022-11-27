@@ -1,11 +1,14 @@
 package agh.ics.oop;
 
 import org.junit.jupiter.api.Test;
+
+import java.io.FileNotFoundException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GrassFieldTest {
     @Test
-    void canMoveTo_whereAnimal() {
+    void canMoveTo_whereAnimal() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Animal zwierz = new Animal(map, new Vector2d(2,2));
         assertFalse(map.canMoveTo(new Vector2d(2,2)));
@@ -13,7 +16,7 @@ class GrassFieldTest {
     }
 
     @Test
-    void canMoveTo_whereGrass() {
+    void canMoveTo_whereGrass() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         map.elements.put(new Vector2d(2,2), new Grass(new Vector2d(2,2)));
         assertTrue(map.canMoveTo(new Vector2d(2,2)));
@@ -21,14 +24,14 @@ class GrassFieldTest {
     }
 
     @Test
-    void place() {
+    void place() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Vector2d pos = new Vector2d(2,2);
         Animal zwierz = new Animal(map, pos);
         assertEquals(map.objectAt(pos).getClass(), Animal.class);
     }
     @Test
-    void place_error(){
+    void place_error() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Vector2d pos = new Vector2d(2,2);
         Animal zwierz = new Animal(map, pos);
@@ -40,7 +43,7 @@ class GrassFieldTest {
     }
 
     @Test
-    void isOccupied_withAnimal() {
+    void isOccupied_withAnimal() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Vector2d pos = new Vector2d(2,2);
         Animal zwierz = new Animal(map, pos);
@@ -48,7 +51,7 @@ class GrassFieldTest {
     }
 
     @Test
-    void isOccupied_withGrass() {
+    void isOccupied_withGrass() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Vector2d pos = new Vector2d(2,2);
 //        map.things.add(new Grass(pos));
@@ -56,7 +59,7 @@ class GrassFieldTest {
         assertTrue(map.isOccupied(pos));
     }
     @Test
-    void objectAt() {
+    void objectAt() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Vector2d pos1 = new Vector2d(2,2);
         Vector2d pos2 = new Vector2d(2,3);
@@ -67,7 +70,7 @@ class GrassFieldTest {
     }
     // Ten test jest zależny od działania metody isOccupied, nie wiem jak dodać zależność testów...
     @Test
-    void remove() {
+    void remove() throws FileNotFoundException {
         GrassField map = new GrassField(0);
         Vector2d pos1 = new Vector2d(2,2);
         Vector2d pos2 = new Vector2d(2,3);
