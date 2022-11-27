@@ -30,7 +30,9 @@ public class Animal extends AbstractWorldMapElement {
                 if (this.worldMap.canMoveTo(newPos)) {
                     eatIfGrass(newPos);
                     positionChanged(newPos);
+                    this.worldMap.remove(this.position);
                     position = newPos;
+                    this.worldMap.place(this);
                 }
             }
             case BACKWARD -> {
@@ -38,7 +40,9 @@ public class Animal extends AbstractWorldMapElement {
                 if (this.worldMap.canMoveTo(newPos)) {
                     eatIfGrass(newPos);
                     positionChanged(newPos);
+                    this.worldMap.remove(this.position);
                     position = newPos;
+                    this.worldMap.place(this);
                 }
             }
         }
@@ -49,12 +53,9 @@ public class Animal extends AbstractWorldMapElement {
             // zwierzak zjadł trawę
         }
     }
-    void addObserver(IPositionChangeObserver observer){
-        observers.add(observer);
+    void addObserver(IPositionChangeObserver observer){observers.add(observer);
     }
-    void removeObserver(IPositionChangeObserver observer) {
-        observers.remove(observer);
-    }
+    void removeObserver(IPositionChangeObserver observer) {observers.remove(observer);}
     void positionChanged(Vector2d newPos) {
         for (IPositionChangeObserver obs: observers) {
             obs.positionChanged(this.position, newPos);

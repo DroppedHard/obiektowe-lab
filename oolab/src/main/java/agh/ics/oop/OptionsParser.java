@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OptionsParser {
-    static MoveDirection[] parse(String[] moves) {
+    public static MoveDirection[] parse(String[] moves) throws IllegalArgumentException {
         List<MoveDirection> movement = new ArrayList<>();
         for (String move : moves) {
             switch (move) {
@@ -12,6 +12,7 @@ public class OptionsParser {
                 case "b", "backward" -> movement.add(MoveDirection.BACKWARD);
                 case "l", "left" -> movement.add(MoveDirection.LEFT);
                 case "r", "right" -> movement.add(MoveDirection.RIGHT);
+                default -> throw new IllegalArgumentException("Podane parametry nie spełniają wymagań!");
             }
         }
         MoveDirection[] odp = new MoveDirection[movement.size()];
