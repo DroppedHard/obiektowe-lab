@@ -18,26 +18,19 @@ public class GrassField extends AbstractWorldMap implements IWorldMap, IPosition
     }
 
     @Override
-    public void place(Animal animal) {
-        AbstractWorldMapElement el = elements.get(animal.position);
+    public void place(Animal animal) throws IllegalArgumentException{
         if (isOccupied(animal.position)) {
+            AbstractWorldMapElement el = elements.get(animal.position);
             if (el.getClass() == Animal.class) {
-                return;
+                throw new IllegalArgumentException("Nie można ruszyć się na pozycję " + animal.position);
             }
             remove(animal.position);
         }
         elements.put(animal.position, animal);
-        adaptCorners(animal.position);
-    }
-
-    @Override
-    public boolean isOccupied(Vector2d position) {
-        return !(elements.get(position) == null);
-    }
-
-    @Override
-    public AbstractWorldMapElement objectAt(Vector2d position) {
-        return elements.get(position);
+        animal.addObserver(boundary);
+        BoundaryElement el = new BoundaryElement(animal.position, Animal.class);
+        boundary.addBoundaryElement(el);
+        adaptCorners();
     }
 
     @Override
@@ -57,8 +50,11 @@ public class GrassField extends AbstractWorldMap implements IWorldMap, IPosition
             int y = (int) (Math.random()*size);
             Vector2d pos = new Vector2d(x,y);
             if (!isOccupied(pos)){
+                Grass grass = new Grass(pos);
                 elements.put(pos, new Grass(pos));
-                adaptCorners(pos);
+                BoundaryElement el = new BoundaryElement(grass.position, Grass.class);
+                boundary.addBoundaryElement(el);
+                adaptCorners();
                 i++;
             }
         }
