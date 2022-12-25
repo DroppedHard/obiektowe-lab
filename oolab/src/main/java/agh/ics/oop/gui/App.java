@@ -4,6 +4,9 @@ import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -13,23 +16,21 @@ public class App extends Application implements IPositionChangeObserver{
     AbstractWorldMap abstractMap;
     ColumnConstraints cc = new ColumnConstraints(40);
     RowConstraints rc = new RowConstraints(40);
-    GridPane grid;
+    public GridPane grid;
+    SimulationEngine engine;
     @Override
     public void init(){
         try {
             System.out.println("System wystartowal");
-            MoveDirection[] directions = OptionsParser.parse(getParameters().getRaw().toArray(new String[0]));
+            MoveDirection[] directions = {};
             System.out.println("Args");
             GrassField grassMap = new GrassField(10);
             abstractMap = grassMap;
             System.out.println("dodano mapę");
             Vector2d[] positions = {new Vector2d(2,2), new Vector2d(3,4)};
-//            Vector2d[] positions = {};
             System.out.println("dodano zwierzaki");
-            SimulationEngine engine = new SimulationEngine(directions, grassMap, positions, this);
+            engine = new SimulationEngine(directions, grassMap, positions, this);
             System.out.println("Rysujemy mapę");
-            Thread engineThread = new Thread(engine);
-            engineThread.start();
             System.out.println("System zakonczyl dzialanie");
         } catch (IllegalArgumentException exception){
             System.out.println(exception.getMessage());
@@ -40,17 +41,22 @@ public class App extends Application implements IPositionChangeObserver{
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
         primaryStage.setTitle("oolab");
-        StackPane root = new StackPane();
+        VBox root = new VBox();
         grid = new GridPane();
         grid.setGridLinesVisible(true);
         centerGrid();
         addElements();
-        root.getChildren().add(grid);
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(grid);
+        root.getChildren().add(scroll);
+        addControls(root);
         Scene scene = new Scene(root, 600, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    private void centerGrid(){
+    public void centerGrid(){
+        this.grid.getColumnConstraints().clear();
+        this.grid.getRowConstraints().clear();
         grid.setAlignment(Pos.CENTER);
         for (int j = abstractMap.lowerLeft.x-1; j <= abstractMap.upperRight.x; j++) {
             grid.getColumnConstraints().add(cc);
@@ -75,13 +81,6 @@ public class App extends Application implements IPositionChangeObserver{
             }
         }
     }
-    private void changeElements() throws FileNotFoundException {
-        for (int i = abstractMap.upperRight.y; i >= abstractMap.lowerLeft.y; i--) {
-            for (int j = abstractMap.lowerLeft.x+1; j <= abstractMap.upperRight.x; j++) {
-                drawObject(grid, new Vector2d(j, i));
-            }
-        }
-    }
     private void addCell(int colIdx, int rowIdx, String text){
         Label label = new Label(text);
         label.setStyle("-fx-font-size: 20");
@@ -102,11 +101,31 @@ public class App extends Application implements IPositionChangeObserver{
         }
     }
     public void clearMap(){
+        for (int j = abstractMap.lowerLeft.x-1; j <= abstractMap.upperRight.x; j++) {
+            grid.getColumnConstraints().add(new ColumnConstraints());
+        }
+        for (int i = abstractMap.upperRight.y+1; i >= abstractMap.lowerLeft.y; i--) {
+            grid.getRowConstraints().add(new RowConstraints());
+        }
         grid.getChildren().clear();
     }
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-
+        abstractMap.positionChanged(oldPosition, newPosition);
+    }
+    private void addControls(VBox root) {
+        Button moveBt = new Button("Rusz zwierzakami!");
+        TextField textField = new TextField();
+        moveBt.setOnAction(action -> {
+            String[] args = {textField.getText()};
+            String str = String.join("", args[0].split(" "));
+            MoveDirection[] moves = OptionsParser.parse(str.split(""));
+            Thread engineThread = new Thread(engine);
+            engine.moves = moves;
+            engineThread.start();
+        });
+        root.getChildren().add(moveBt);
+        root.getChildren().add(textField);
     }
 }

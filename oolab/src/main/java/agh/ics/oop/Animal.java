@@ -1,7 +1,5 @@
 package agh.ics.oop;
-import agh.ics.oop.gui.GuiElementBox;
 import javafx.scene.image.Image;
-import javafx.scene.layout.VBox;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ public class Animal extends AbstractWorldMapElement implements IMapElement{
     public Animal(IWorldMap map, Vector2d initialPosition) throws FileNotFoundException {
         super(initialPosition);
         this.worldMap = map;
-        addObserver((IPositionChangeObserver) map);
         worldMap.place(this);
     }
 
@@ -60,23 +57,13 @@ public class Animal extends AbstractWorldMapElement implements IMapElement{
             // zwierzak zjadł trawę
         }
     }
-    void addObserver(IPositionChangeObserver observer){observers.add(observer);
-    }
+    void addObserver(IPositionChangeObserver observer){observers.add(observer);}
     void removeObserver(IPositionChangeObserver observer) {observers.remove(observer);}
     void positionChanged(Vector2d newPos) {
         for (IPositionChangeObserver obs: observers) {
             obs.positionChanged(this.position, newPos);
         }
     }
-    public VBox createImage() throws IllegalArgumentException, FileNotFoundException{
-        try {
-            GuiElementBox el = new GuiElementBox(this);
-            return el.box;
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(e.getMessage());
-        }
-    }
-
     @Override
     public Image getImg() throws IllegalArgumentException {
         switch (this.facing) {
